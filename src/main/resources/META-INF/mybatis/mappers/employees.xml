@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ 	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.sample.demo.mappers.EmployeeMapper">
+
+	<sql id="empselect">
+		select
+			employee_id			as id,
+			first_name			as firstName,
+			last_name			as lastName,
+			phone_number		as phoneNumber,
+			email,
+			hire_date			as hireDate,
+			job_id				as jobId,
+			salary,
+			commission_pct		as commissionPct,
+			manager_id			as managerId,
+			department_id		as departmentId
+		from 
+			employees
+	</sql>
+
+	<select id="getAllEmployees" resultType="Employee">
+		<include refid="empselect"></include>
+		order by 
+			employee_id asc
+	</select>
+	
+	<select id="searchEmployees" parameterType="Employee" resultType="Employee">
+		select
+			employee_id			as id,
+			first_name			as firstName,
+			last_name			as lastName,
+			phone_number		as phoneNumber,
+			email,
+			hire_date			as hireDate,
+			job_id				as jobId,
+			salary,
+			commission_pct		as commissionPct,
+			manager_id			as managerId,
+			department_id		as departmentId
+		from 
+			employees
+		<where>
+			<if test="firstName != null">
+				first_name = #{firstName}
+			</if>
+			<if test="jobId != null">
+				and job_id = #{jobId}
+			</if>
+			<if test="hireDate != null">
+				and to_char(hire_date, 'yyyy') = to_char(hireDate, 'yyyy')
+			</if>
+			<if test="departmentId != null">
+				and department_id = #{departmentId}
+			</if>
+		</where>
+		order by 
+			employee_id asc
+	</select>
+	
+	<select id="findEmployees" parameterType="Criteria" resultType="Employee">
+		select
+			employee_id			as id,
+			first_name			as firstName,
+			last_name			as lastName,
+			phone_number		as phoneNumber,
+			email,
+			hire_date			as hireDate,
+			job_id				as jobId,
+			salary,
+			commission_pct		as commissionPct,
+			manager_id			as managerId,
+			department_id		as departmentId
+		from 
+			employees
+		<where>
+			<if test="opt != null and keyword != null">
+				<choose>
+					<when test="opt == 'name'">
+						first_name = #{keyword}
+					</when>
+					<when test="opt == 'job'">
+						job_id = #{keyword}
+					</when>
+					<when test="opt == 'dept'">
+						department_id = #{keyword}
+					</when>
+				</choose>
+			</if>
+		</where>
+	</select>
+	
+	<select id="getEmployees" parameterType="map" resultType="Employee">
+		select
+			employee_id			as id,
+			first_name			as firstName,
+			last_name			as lastName,
+			phone_number		as phoneNumber,
+			email,
+			hire_date			as hireDate,
+			job_id				as jobId,
+			salary,
+			commission_pct		as commissionPct,
+			manager_id			as managerId,
+			department_id		as departmentId
+		from 
+			employees
+		<where>
+			<if test="job != null">
+				and job_id = #{job}
+			</if>
+			<if test="dept != null">
+				and department_id = #{dept}
+			</if>
+		</where>
+	</select>
+	
+	<select id="takeEmployees" parameterType="map"  resultType="hashmap">
+		select *
+		from 
+			employees
+		<where>			
+			<if test="id != null">
+				and employee_id = #{id}
+			</if>
+			<if test="job != null">
+				and job_id = #{job}
+			</if>
+			<if test="dept != null">
+				and department_id = #{dept}
+			</if>
+		</where>
+	</select>
+	
+	<select id="fetchEmployees" parameterType="Criteria" resultType="Employee">
+		<include refid="empselect"/>
+		<where>
+			<if test="opt != null and keyword != null">
+				<choose>
+					<when test="opt == 'name'">
+						first_name = #{keyword}
+					</when>
+				</choose>
+			</if>
+			<if test="depts != null">
+				and department_id in 
+				<foreach item="deptno" index="index" collection="depts" 
+						separator="," open="(" close=")">
+					#{deptno}
+				</foreach>
+			</if>
+		</where>
+	</select>
+	
+	<update id="updateEmployee" parameterType="Employee">
+		update 
+			employees
+		<set>
+			<if test="firstName != null">first_name = #{firstName},</if>
+			<if test="lastName != null">last_name = #{lastName},</if>
+			<if test="email != null">email = #{email},</if>
+			<if test="phoneNumber != null">phone_number = #{phoneNumber},</if>
+			<if test="hireDate != null">hire_date = #{hireDate},</if>
+			<if test="jobId != null">job_id = #{jobId},</if>
+			<if test="salary != null">salary = #{salary},</if>
+			<if test="commissionPct != null">commission_pct = #{commissionPct},</if>
+			<if test="managerId != null">manager_id = #{managerId},</if>
+			<if test="departmentId != null">department_id = #{departmentId},</if>
+		</set>
+		where
+			employee_id = #{id}
+	</update>
+	
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
